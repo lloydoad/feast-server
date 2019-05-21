@@ -13,25 +13,6 @@ def fill_database(classifiers=business_filepath, ignored_classifiers=ignore_file
   else:
     return generate_source_files(business_filepath=classifiers, ignore_filepath=ignored_classifiers)
 
-def sort_classifiers(adjacency_list=None):
-  if adjacency_list is None:
-    return adjacency_list
-
-  if ID_KEY in adjacency_list:
-    del adjacency_list[ID_KEY]
-  
-  return sorted(adjacency_list.items(), key=lambda item: item[1][KEY_INDEX])
-
-def get_classifier(adjacent_list=None, last_index=-1, start=0, end=0, previous_list=None):
-  if adjacent_list is None or last_index == -1 or previous_list is None or not type(previous_list) == list:
-    return None
-
-  random_classifier = adjacent_list[randint(start, end)][0]
-  while random_classifier in previous_list:
-    random_classifier = adjacent_list[randint(start, end)][0]
-
-  return random_classifier
-
 def attach_user_preference(default_list=None, user_preference=None):
   if default_list is None or user_preference is None:
     return default_list
