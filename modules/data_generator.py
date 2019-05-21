@@ -1,4 +1,4 @@
-from modules.mongo import criticalPointCollectionKey, adjacencyListCollectionKey
+from modules.mongo import criticalpoint_collection_key, adjacencylist_collection_key
 from modules.csv_converter import writeToCSV
 from modules.data_parser import get_adjacencylist
 from modules.classifier import populateCVS
@@ -25,8 +25,8 @@ def generate_source_files(business_filepath=business_filepath, ignore_filepath=i
 
   client = MongoClient(mongoLink)
   database = client.get_database()
-  criticalpoint_collection = database[criticalPointCollectionKey]
-  adjacencylist_collection = database[adjacencyListCollectionKey]
+  criticalpoint_collection = database[criticalpoint_collection_key]
+  adjacencylist_collection = database[adjacencylist_collection_key]
 
   adjacencylist = get_adjacencylist(business_filepath, ignore_filepath)
   csv_file = writeToCSV(adjacencylist)

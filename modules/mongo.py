@@ -3,30 +3,30 @@ from os import environ
 
 FATAL_DATABASE_NON_CONNECT = 'DATABASE CONNECTION FAIL'
 
-mongoURI = 'FEAST_MONGO'
-criticalPointCollectionKey = 'DistributionCutoffs'
-adjacencyListCollectionKey = 'AdjacencyList'
+mongo_url = 'FEAST_MONGO'
+criticalpoint_collection_key = 'DistributionCutoffs'
+adjacencylist_collection_key = 'AdjacencyList'
 
-mongoLink = environ.get(mongoURI)
-criticalPointCollection = None
-adjacencyListCollection = None
+mongoLink = environ.get(mongo_url)
+criticalpoint_collection = None
+adjacencylist_collection = None
 
 if not mongoLink == None:
   client = MongoClient(mongoLink)
   database = client.get_database()
-  criticalPointCollection = database[criticalPointCollectionKey]
-  adjacencyListCollection = database[adjacencyListCollectionKey]
+  criticalpoint_collection = database[criticalpoint_collection_key]
+  adjacencylist_collection = database[adjacencylist_collection_key]
 
 def getRecentList():
-  if adjacencyListCollection == None:
+  if adjacencylist_collection == None:
     print(FATAL_DATABASE_NON_CONNECT)
     return None
   
-  return adjacencyListCollection.find_one({}, sort=[( '_id', DESCENDING )])
+  return adjacencylist_collection.find_one({}, sort=[( '_id', DESCENDING )])
 
 def getRecentPoints():
-  if criticalPointCollection == None:
+  if criticalpoint_collection == None:
     print(FATAL_DATABASE_NON_CONNECT)
     return None
   
-  return criticalPointCollection.find_one({}, sort=[( '_id', DESCENDING )])
+  return criticalpoint_collection.find_one({}, sort=[( '_id', DESCENDING )])
