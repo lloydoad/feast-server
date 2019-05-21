@@ -1,37 +1,41 @@
 from modules.mongo import criticalPointCollectionKey, adjacencyListCollectionKey
 from modules.csv_converter import writeToCSV
-from modules.data_parser import getAdjacencyList
+from modules.data_parser import get_adjacencylist
 from modules.classifier import populateCVS
 from pymongo import MongoClient
 from os import environ
 
-businessFilePath = './files/business.json'
-ignoreFilePath = './files/ignore.txt'
-mongoURI = 'FEAST_MONGO'
-
 LIST_KEY = 'list'
 CUTOFFS_KEY = 'cutoffs'
 
-def generateSourceFiles(businessFilePath=businessFilePath,ignoreFilePath=ignoreFilePath):
+business_filepath = './files/business.json'
+ignore_filepath = './files/ignore.txt'
+mongoURI = 'FEAST_MONGO'
+
+def generate_source_files(business_filepath=business_filepath, ignore_filepath=ignore_filepath):
   mongoLink = environ.get(mongoURI)
 
-  if mongoLink == None:
+  if mongoLink is None:
     print('FATAL ERROR: DATABASE NOT SET')
+    return None
+  
+  if business_filepath is None or ignore_filepath is None:
+    print('FATAL ERROR: FILEPATHS ARE INVALID')
     return None
 
   client = MongoClient(mongoLink)
   database = client.get_database()
-  criticalPointCollection = database[criticalPointCollectionKey]
-  adjacencyListCollection = database[adjacencyListCollectionKey]
+  criticalpoint_collection = database[criticalPointCollectionKey]
+  adjacencylist_collection = database[adjacencyListCollectionKey]
 
-  adjacencyList = getAdjacencyList(businessFilePath, ignoreFilePath)
-  csvFile = writeToCSV(adjacencyList)
+  adjacencylist = get_adjacencylist(business_filepath, ignore_filepath)
+  csv_file = writeToCSV(adjacencylist)
   cutoffs = populateCVS()
 
-  adjacencyListCollection.insert_one(adjacencyList)
-  criticalPointCollection.insert_one(cutoffs)
+  adjacencylist_collection.insert_one(adjacencylist)
+  criticalpoint_collection.insert_one(cutoffs)
 
   return {
-    LIST_KEY: adjacencyList,
+    LIST_KEY: adjacencylist,
     CUTOFFS_KEY: cutoffs
   }

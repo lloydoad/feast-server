@@ -1,4 +1,4 @@
-from modules.data_generator import generateSourceFiles, businessFilePath, ignoreFilePath
+from modules.data_generator import generate_source_files, business_filepath, ignore_filepath
 from modules.classifier import LOWER_CUTOFF_KEY, UPPER_CUTOFF_KEY
 from modules.data_parser import POPULARITY_KEY, ADJACENTS_KEY
 from modules.mongo import getRecentList, getRecentPoints
@@ -7,17 +7,19 @@ from random import randint, sample
 
 ID_KEY = '_id'
 
-def fill_database(classifiers=businessFilePath, ignored_classifiers=ignoreFilePath):
-  if not classifiers and not ignored_classifiers:
-    return generateSourceFiles()
+def fill_database(classifiers=business_filepath, ignored_classifiers=ignore_filepath):
+  if classifiers is None or ignored_classifiers is None:
+    return generate_source_files()
   else:
-    return generateSourceFiles(businessFilePath=classifiers, ignoreFilePath=ignored_classifiers)
+    return generate_source_files(business_filepath=classifiers, ignore_filepath=ignored_classifiers)
 
 def sort_classifiers(adjacency_list=None):
   if adjacency_list is None:
     return adjacency_list
 
-  # del adjacency_list[ID_KEY]
+  if ID_KEY in adjacency_list:
+    del adjacency_list[ID_KEY]
+  
   return sorted(adjacency_list.items(), key=lambda item: item[1][KEY_INDEX])
 
 def get_classifier(adjacent_list=None, last_index=-1, start=0, end=0, previous_list=None):
