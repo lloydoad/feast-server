@@ -62,17 +62,22 @@ def get_initial_classifiers(user_preference=None):
   """
   adjacency_list = getRecentList()
   cutoff_points = getRecentPoints()
+  choice_list_count = 5
   retval = []
 
   if adjacency_list is None or cutoff_points is None:
     return retval
 
   adjacency_list = attach_user_preference(default_list=adjacency_list, user_preference=user_preference)
-  sorted_adjacency_list = sort_classifiers(adjacency_list=adjacency_list)
+
+  index_sorted_adjacencylist = {}
+  last_index = 0
+  for key,value in adjacency_list.items():
+    index_sorted_adjacencylist[value[KEY_INDEX]] = key
+    last_index = max(last_index, value[KEY_INDEX])
 
   upper_cutoff = cutoff_points[UPPER_CUTOFF_KEY]
   lower_cutoff = cutoff_points[LOWER_CUTOFF_KEY]
-  last_index = len(sorted_adjacency_list) - 1
   iteration = [
     (0, lower_cutoff),
     ((lower_cutoff + 1), upper_cutoff),
@@ -82,19 +87,23 @@ def get_initial_classifiers(user_preference=None):
     ((upper_cutoff + 1), last_index)
   ]
 
-  for passes in range(5):
-    result = []
-    for start,end in iteration:
-      result.append(
-        get_classifier(
-          adjacent_list=sorted_adjacency_list,
-          last_index=last_index,
-          start=start,
-          end=end,
-          previous_list=result
-        )
-      )
-    retval.append(result)
+  for passes in range(choice_list_count):
+    choices = []
+    infinite_loop_sentinel = 1000
+
+    for start, end in iteration:
+      choice = index_sorted_adjacencylist[randint(start, end)]
+
+      while choice in choices:
+        infinite_loop_sentinel -= 1
+        choice = index_sorted_adjacencylist[randint(start, end)]
+        if infinite_loop_sentinel <= 0:
+          print('FATAL ERROR: CSV FILE CURRUPTED')
+          return retval
+      
+      choices.append(choice)
+    
+    retval.append(choices)
 
   return retval
 
