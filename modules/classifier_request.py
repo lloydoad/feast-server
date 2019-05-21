@@ -150,26 +150,20 @@ def get_subsequent_classifier(leading_classifier=None):
 
   subsequent_classifiers_list = [adjacent for adjacent in adjacency_list[leading_classifier][ADJACENTS_KEY]]
   length = len(subsequent_classifiers_list)
-  list_start = cutoff_points[UPPER_CUTOFF_KEY]
-  list_end = len(adjacency_list) - 2
-
-  if length <= 10:
-    return get_fallback_classifiers(
-      available_classifiers=subsequent_classifiers_list, adjacency_list=adjacency_list,
-      start=list_start, end=list_end
-    )
-
-  local_upper_cutoff = int((cutoff_points[UPPER_CUTOFF_KEY] / (list_end + 1)) * length)
-  local_lower_cutoff = int((cutoff_points[LOWER_CUTOFF_KEY] / (list_end + 1)) * length)
+  absolute_upper_cutoff = len(adjacency_list) - 2
+  absolute_lower_cutoff = cutoff_points[UPPER_CUTOFF_KEY]
+  local_upper_cutoff = int((cutoff_points[UPPER_CUTOFF_KEY] / (absolute_upper_cutoff + 1)) * length)
+  local_lower_cutoff = int((cutoff_points[LOWER_CUTOFF_KEY] / (absolute_upper_cutoff + 1)) * length)
 
   if (
+    length <= 10 or
     local_lower_cutoff - 0 < 1 or
     local_upper_cutoff - local_lower_cutoff < 3 or
-    list_end - local_upper_cutoff < 2
+    absolute_upper_cutoff - local_upper_cutoff < 2
   ):
     return get_fallback_classifiers(
       available_classifiers=subsequent_classifiers_list, adjacency_list=adjacency_list,
-      start=list_start, end=list_end
+      start=absolute_lower_cutoff, end=absolute_upper_cutoff
     )
 
   subsequent_classifiers_dict = {}
@@ -181,7 +175,6 @@ def get_subsequent_classifier(leading_classifier=None):
   samples = [index for index in sample(range(0,local_lower_cutoff), k=1)]
   samples += [index for index in sample(range(local_lower_cutoff,local_upper_cutoff), k=3)]
   samples += [index for index in sample(range(local_upper_cutoff, length), k=2)]
-
   for index in samples:
     retval.append(subsequent_classifiers_list[index])
 

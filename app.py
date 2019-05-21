@@ -10,7 +10,7 @@ from modules.data_generator import generate_source_files
 '''
 
 if __name__ == '__main__':
-  print(get_initial_classifiers(user_preference={'Cuban', 'South African'}))
-  # print(get_subsequent_classifier(leading_classifier='Churros'))
+  # print(get_initial_classifiers(user_preference={'Cuban', 'South African'}))
+  print(get_subsequent_classifier(leading_classifier='Pizza'))
 
   # print(generate_source_files())
