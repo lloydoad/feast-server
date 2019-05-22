@@ -17,14 +17,14 @@ if not mongoLink == None:
   criticalpoint_collection = database[criticalpoint_collection_key]
   adjacencylist_collection = database[adjacencylist_collection_key]
 
-def getRecentList():
+def get_recentlist():
   if adjacencylist_collection == None:
     print(FATAL_DATABASE_NON_CONNECT)
     return None
   
   return adjacencylist_collection.find_one({}, sort=[( '_id', DESCENDING )])
 
-def getRecentPoints():
+def get_recentpoints():
   if criticalpoint_collection == None:
     print(FATAL_DATABASE_NON_CONNECT)
     return None

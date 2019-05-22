@@ -1,7 +1,7 @@
 from modules.data_generator import generate_source_files, business_filepath, ignore_filepath
 from modules.classifier import LOWER_CUTOFF_KEY, UPPER_CUTOFF_KEY
 from modules.data_parser import POPULARITY_KEY, ADJACENTS_KEY
-from modules.mongo import getRecentList, getRecentPoints
+from modules.mongo import get_recentlist, get_recentpoints
 from modules.csv_converter import KEY_INDEX
 from random import randint, sample
 
@@ -41,8 +41,8 @@ def get_initial_classifiers(user_preference=None):
   :param user_preference: list of user preference and popularity to adjacency list, eg ['churros','pizza']
   :return: List of 5 sets
   """
-  adjacency_list = getRecentList()
-  cutoff_points = getRecentPoints()
+  adjacency_list = get_recentlist()
+  cutoff_points = get_recentpoints()
   choice_list_count = 5
   retval = []
 
@@ -120,8 +120,8 @@ def get_subsequent_classifier(leading_classifier=None):
   :param leading_classifier: string, eg 'churros'
   :return: one set
   """
-  adjacency_list = getRecentList()
-  cutoff_points = getRecentPoints()
+  adjacency_list = get_recentlist()
+  cutoff_points = get_recentpoints()
   retval = []
 
   if adjacency_list is None or cutoff_points is None:
