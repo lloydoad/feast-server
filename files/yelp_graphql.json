@@ -1,0 +1,3 @@
+{
+  "query": "{ search(latitude: $lat, longitude: $lon, radius: 40000, categories: \"$cat\", limit: $limit) { business { name rating price review_count hours { is_open_now } reviews { text rating url } location { address1 city state country } } } }"
+}
