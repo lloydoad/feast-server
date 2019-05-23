@@ -1,4 +1,5 @@
 from modules.classifier_request import get_initial_classifiers, get_subsequent_classifier, fill_database
+from modules.search import find_restaurants
 from modules.data_generator import generate_source_files
 '''
   TODO
@@ -10,7 +11,8 @@ from modules.data_generator import generate_source_files
 '''
 
 if __name__ == '__main__':
-  print(get_initial_classifiers(user_preference={'Cuban', 'South African'}))
-  print(get_subsequent_classifier(leading_classifier='Pizza'))
+  print(find_restaurants(tags=['italian','pizza'], latitude=28.595050, longitude=-81.220470))
+  # print(get_initial_classifiers(user_preference={'Cuban', 'South African'}))
+  # print(get_subsequent_classifier(leading_classifier='Pizza'))
 
   # print(generate_source_files())
