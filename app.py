@@ -6,6 +6,7 @@ from modules.data_generator import generate_source_files
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
+ROUTE_INDEX = '/'
 ROUTE_SETUP = '/setup'
 ROUTE_ADDON = '/addon'
 ROUTE_RESTAURANTS = '/restaurants'
@@ -29,14 +30,17 @@ def send_response(responseObj):
   else:
     return getJsonResponse(code=CODE_ERROR, message=responseObj[KEY_MESSAGE])
 
+@app.route(ROUTE_INDEX, methods=[METHOD_GET])
+def index():
+  return 'Feast Server Live'
+
 @app.route(ROUTE_SETUP, methods=[METHOD_GET])
 def get_initial_classifier():
-  classifiers = request.args.get(KEY_CLASSIFIERS)
+  classifiers = request.args.getlist(KEY_CLASSIFIERS)
 
   if(
     classifiers is None or 
-    not isinstance(classifiers, list) or
-    len(classifiers) == 0
+    not isinstance(classifiers, list)
   ):
     return getJsonResponse(code=CODE_ERROR)
 
@@ -48,8 +52,8 @@ def get_initial_classifier():
   return send_response(results)
 
 @app.route(ROUTE_ADDON, methods=[METHOD_GET])
-def get_subsequent_classifier():
-  classifiers = request.args.get(KEY_CLASSIFIERS)
+def get_following_classifier():
+  classifiers = request.args.getlist(KEY_CLASSIFIERS)
 
   if(
     classifiers is None or 
@@ -58,12 +62,13 @@ def get_subsequent_classifier():
   ):
     return getJsonResponse(code=CODE_ERROR)
 
-  results = get_subsequent_classifier(leading_classifier=classifiers[0])
+  initial_classifier = str(classifiers[0]).lower().capitalize()
+  results = get_subsequent_classifier(leading_classifier=initial_classifier)
   return send_response(results)
 
 @app.route(ROUTE_RESTAURANTS, methods=[METHOD_GET])
 def get_restaurants():
-  classifiers = request.args.get(KEY_CLASSIFIERS)
+  classifiers = request.args.getlist(KEY_CLASSIFIERS)
   longitude = request.args.get(KEY_LONGITUDE)
   latitude = request.args.get(KEY_LATITUDE)
 
@@ -76,7 +81,14 @@ def get_restaurants():
   ):
     return getJsonResponse(code=CODE_ERROR)
 
-  results = find_restaurants(tags=classifiers, latitude=latitude, longitude=longitude)
+  try:
+    latitude = float(latitude)
+    longitude = float(longitude)
+  except ValueError:
+    return getJsonResponse(code=CODE_ERROR)
+  tags = [val.lower() for val in classifiers]
+
+  results = find_restaurants(tags=tags, latitude=latitude, longitude=longitude)
   return send_response(results)
 
 if __name__ == '__main__':
