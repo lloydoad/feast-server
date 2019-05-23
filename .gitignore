@@ -108,3 +108,4 @@ credentials.json
 business.json
 ignore.txt
 .idea/
+.DS_Store

@@ -9,6 +9,8 @@ KEY_DATA = 'data'
 KEY_SEARCH = 'search'
 KEY_BUSINESS = 'business'
 KEY_YELP_TOKEN = 'YELP_API_KEY'
+
+# Response Keys
 KEY_DATA = 'data'
 KEY_CODE = 'status'
 KEY_MESSAGE = 'response_text'
