@@ -1,5 +1,6 @@
 from modules.data_generator import generate_source_files, business_filepath, ignore_filepath
 from modules.classifier import LOWER_CUTOFF_KEY, UPPER_CUTOFF_KEY
+from modules.search import ERROR_QUERY, CODE_ERROR, ERROR_GENERAL, response
 from modules.data_parser import POPULARITY_KEY, ADJACENTS_KEY
 from modules.mongo import get_recentlist, get_recentpoints
 from modules.csv_converter import KEY_INDEX
@@ -36,6 +37,13 @@ def attach_user_preference(default_list=None, user_preference=None):
 
   return new_adjacency_list
 
+def wrap_response(retval):
+  length = len(retval)
+  if length == 0:
+    return response(response_code=CODE_ERROR, response_text=ERROR_GENERAL)
+  else:
+    return response(data=retval)
+
 def get_initial_classifiers(user_preference=None):
   """
   :param user_preference: list of user preference and popularity to adjacency list, eg ['churros','pizza']
@@ -47,7 +55,7 @@ def get_initial_classifiers(user_preference=None):
   retval = []
 
   if adjacency_list is None or cutoff_points is None:
-    return retval
+    return response(response_code=CODE_ERROR, response_text=ERROR_QUERY)
 
   adjacency_list = attach_user_preference(default_list=adjacency_list, user_preference=user_preference)
 
@@ -86,7 +94,7 @@ def get_initial_classifiers(user_preference=None):
     
     retval.append(choices)
 
-  return retval
+  return wrap_response(retval)
 
 def get_fallback_classifiers(available_classifiers=None, adjacency_list=None, start=0, end=0):
   """
@@ -125,9 +133,9 @@ def get_subsequent_classifier(leading_classifier=None):
   retval = []
 
   if adjacency_list is None or cutoff_points is None:
-    return retval
+    return response(response_code=CODE_ERROR, response_text=ERROR_QUERY)
   if leading_classifier is None or leading_classifier not in adjacency_list:
-    return retval
+    return response(response_code=CODE_ERROR, response_text=ERROR_QUERY)
 
   subsequent_classifiers_list = [adjacent for adjacent in adjacency_list[leading_classifier][ADJACENTS_KEY]]
   length = len(subsequent_classifiers_list)
@@ -159,4 +167,4 @@ def get_subsequent_classifier(leading_classifier=None):
   for index in samples:
     retval.append(subsequent_classifiers_list[index])
 
-  return retval
+  return wrap_response(retval)
