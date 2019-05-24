@@ -11,6 +11,7 @@ flask = "*"
 pandas = "*"
 gunicorn = "*"
 pymongo = "*"
+airbrake = "*"
 
 [requires]
 python_version = "3.7"

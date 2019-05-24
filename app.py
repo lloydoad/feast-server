@@ -2,9 +2,11 @@ from modules.classifier_request import get_initial_classifiers, get_subsequent_c
 from modules.search import find_restaurants, KEY_DATA, KEY_CODE, KEY_MESSAGE, ERROR_QUERY, CODE_ERROR
 from flask import Flask, request, Response, json, jsonify
 from modules.data_generator import generate_source_files
+import airbrake
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
+logger = airbrake.getLogger()
+app.config['DEBUG'] = False
 
 ROUTE_INDEX = '/'
 ROUTE_SETUP = '/setup'
@@ -92,4 +94,5 @@ def get_restaurants():
   return send_response(results)
 
 if __name__ == '__main__':
+  logger.error('Airbrake monitoring initialized')
   app.run()
