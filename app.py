@@ -6,7 +6,7 @@ import airbrake
 
 app = Flask(__name__)
 logger = airbrake.getLogger()
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 
 ROUTE_INDEX = '/'
 ROUTE_SETUP = '/setup'
@@ -16,6 +16,7 @@ ROUTE_RESTAURANTS = '/restaurants'
 METHOD_GET = 'GET'
 
 KEY_CLASSIFIERS = 'classifiers'
+KEY_CLASSIFIERS_ALT = 'classifiers[]'
 KEY_LATITUDE = 'latitude'
 KEY_LONGITUDE = 'longitude'
 
@@ -32,13 +33,27 @@ def send_response(responseObj):
   else:
     return getJsonResponse(code=CODE_ERROR, message=responseObj[KEY_MESSAGE])
 
+def get_classifiers():
+  attempt = request.args.getlist(KEY_CLASSIFIERS)
+
+  if(attempt is None or not isinstance(attempt, list) or len(attempt) == 0):
+    attempt = request.args.getlist(KEY_CLASSIFIERS_ALT)
+  
+  if(attempt is None or not isinstance(attempt, list) or len(attempt) == 0):
+    return None
+
+  print(attempt)
+  
+  return attempt
+
 @app.route(ROUTE_INDEX, methods=[METHOD_GET])
 def index():
   return 'Feast Server Live'
 
 @app.route(ROUTE_SETUP, methods=[METHOD_GET])
 def get_initial_classifier():
-  classifiers = request.args.getlist(KEY_CLASSIFIERS)
+  classifiers = get_classifiers()
+  # request.args.getlist(KEY_CLASSIFIERS)
 
   if(
     classifiers is None or 
@@ -55,13 +70,10 @@ def get_initial_classifier():
 
 @app.route(ROUTE_ADDON, methods=[METHOD_GET])
 def get_following_classifier():
-  classifiers = request.args.getlist(KEY_CLASSIFIERS)
+  classifiers = get_classifiers()
+  # request.args.getlist(KEY_CLASSIFIERS)
 
-  if(
-    classifiers is None or 
-    not isinstance(classifiers, list) or
-    len(classifiers) == 0
-  ):
+  if(classifiers is None):
     return getJsonResponse(code=CODE_ERROR)
 
   initial_classifier = str(classifiers[0]).lower().capitalize()
@@ -70,7 +82,8 @@ def get_following_classifier():
 
 @app.route(ROUTE_RESTAURANTS, methods=[METHOD_GET])
 def get_restaurants():
-  classifiers = request.args.getlist(KEY_CLASSIFIERS)
+  classifiers = get_classifiers()
+  #  request.args.getlist(KEY_CLASSIFIERS)
   longitude = request.args.get(KEY_LONGITUDE)
   latitude = request.args.get(KEY_LATITUDE)
 
