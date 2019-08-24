@@ -6,7 +6,7 @@ An API Manager for iOS Feast application.
 
 ## Routes
 #### Base URL
-URL: ```https://feast-server.herokuapp.com/```
+URL: ```https://feast-server.firebaseapp.com```
 
 #### Classifiers and Avalailable Restaurants
 | Route                           | Query (Required)               | Purpose                                         |
